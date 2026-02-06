@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Modulación Digital - Proyecto Final</title>
+    <style>
+        /* RESET Y BASES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: #0a192f;
+            color: #e6f1ff;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 25px 0;
+            background: linear-gradient(135deg, #112240, #0a192f);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #64ffda;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header h1 {
+            color: #64ffda;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+        
+        .header p {
+            color: #8892b0;
+            font-size: 1.2rem;
+        }
+        
+        .authors {
+            color: #64ffda;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .author-name {
+            background: rgba(100, 255, 218, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #64ffda;
+        }
+        
+        /* LAYOUT PRINCIPAL */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* PANEL DE CONTROLES */
+        .controls {
+            background: #112240;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #233554;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #233554;
+        }
+        
+        .control-group:last-child {
+            border-bottom: none;
+        }
+        
+        .control-group h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-group h3 i {
+            font-size: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccd6f6;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: #0a192f;
+            border: 2px solid #233554;
+            border-radius: 8px;
+            color: #e6f1ff;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #64ffda;
+            outline: none;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: #0a192f;
+            border: 2px solid #233554;
+            border-radius: 8px;
+            color: #e6f1ff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            border-color: #64ffda;
+            outline: none;
+        }
+        
+        /* SLIDERS */
+        .slider-container {
+            background: #0a192f;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            background: #233554;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #64ffda;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.8);
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: #64ffda;
+            color: #0a192f;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 15px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        /* BOTONES */
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, #64ffda, #52d7b7);
+            color: #0a192f;
+        }
+        
+        .secondary-btn {
+            background: #233554;
+            color: #64ffda;
+            border: 2px solid #64ffda;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* PANEL DE VISUALIZACIÓN */
+        .visualization {
+            background: #112240;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #233554;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .canvas-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .canvas-box {
+            background: #0a192f;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #233554;
+        }
+        
+        .canvas-box h4 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 8px;
+            display: block;
+            border: 1px solid #233554;
+        }
+        
+        /* INFORMACIÓN DE MODULACIÓN */
+        .info-box {
+            background: #0a192f;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border-left: 5px solid #64ffda;
+        }
+        
+        .info-box h4 {
+            color: #64ffda;
+            margin-bottom: 10px;
+        }
+        
+        .modulation-type {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #233554;
+            color: #64ffda;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            color: #8892b0;
+            border-top: 1px solid #233554;
+            background: #112240;
+            border-radius: 15px;
+        }
+        
+        .footer h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+        }
+        
+        .footer-authors {
+            color: #64ffda;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            border: 1px solid #64ffda;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .authors {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <h1><i class="fas fa-satellite-dish"></i> SIMULADOR DE MODULACIÓN DIGITAL</h1>
+        <p>Proyecto Final - Aplicaciones Web | Universidad de Oriente</p>
+        <p>Visualización interactiva de ASK, FSK, PSK y 4-QAM</p>
+        
+        <!-- AUTORES AÑADIDOS -->
+        <div class="authors">
+            <div class="author-name">
+                <i class="fas fa-user"></i> Alejandro Marrero Rojas
+            </div>
+            <div class="author-name">
+                <i class="fas fa-user"></i> Sheyla Romy Lara Batista
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container">
+        <!-- PANEL DE CONTROLES -->
+        <div class="controls">
+            <div class="control-group">
+                <h3><i class="fas fa-binary"></i> ENTRADA BINARIA</h3>
+                <label>Secuencia de bits (ej: 10110010):</label>
+                <input type="text" id="binaryInput" value="10110010" maxlength="16" placeholder="Solo 0 y 1">
+                
+                <div class="buttons">
+                    <button class="primary-btn" id="randomBtn">
+                        <i class="fas fa-random"></i> Aleatorio
+                    </button>
+                    <button class="secondary-btn" id="validateBtn">
+                        <i class="fas fa-check"></i> Validar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3><i class="fas fa-wave-square"></i> TIPO DE MODULACIÓN</h3>
+                <select id="modulationType">
+                    <option value="ASK" style="color: #3a86ff;">🔵 ASK - Modulación por Amplitud</option>
+                    <option value="FSK" style="color: #38b000;">🟢 FSK - Modulación por Frecuencia</option>
+                    <option value="PSK" style="color: #ff006e;">🔴 PSK - Modulación por Fase</option>
+                    <option value="QAM" style="color: #8338ec;">🟣 4-QAM - Modulación QAM</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3><i class="fas fa-sliders-h"></i> PARÁMETROS</h3>
+                
+                <label>Frecuencia Portadora:</label>
+                <div class="slider-container">
+                    <input type="range" id="frequency" min="50" max="500" value="100" step="10">
+                    <span class="value-display" id="freqValue">100 Hz</span>
+                </div>
+                
+                <label>Tasa de Bits (Bit Rate):</label>
+                <div class="slider-container">
+                    <input type="range" id="bitrate" min="1" max="10" value="5" step="1">
+                    <span class="value-display" id="bitrateValue">5 bps</span>
+                </div>
+                
+                <label>Amplitud de Señal:</label>
+                <div class="slider-container">
+                    <input type="range" id="amplitude" min="0.5" max="2.0" value="1.0" step="0.1">
+                    <span class="value-display" id="ampValue">1.0</span>
+                </div>
+            </div>
+            
+            <!-- INFORMACIÓN -->
+            <div class="info-box">
+                <h4><i class="fas fa-info-circle"></i> INFORMACIÓN</h4>
+                <div class="modulation-type" id="currentModulation">ASK</div>
+                <p id="modulationDescription">Modulación por desplazamiento de amplitud. Bit '1' = amplitud alta, Bit '0' = amplitud baja.</p>
+                <p id="modulationFormula"><strong>Fórmula:</strong> <span id="formulaText">s(t) = A·m(t)·cos(2πf₀t)</span></p>
+            </div>
+        </div>
+        
+        <!-- PANEL DE VISUALIZACIÓN -->
+        <div class="visualization">
+            <h3><i class="fas fa-chart-line"></i> VISUALIZACIONES</h3>
+            
+            <div class="canvas-container">
+                <!-- SEÑAL TEMPORAL -->
+                <div class="canvas-box">
+                    <h4><i class="fas fa-wave-square"></i> SEÑAL EN DOMINIO DEL TIEMPO</h4>
+                    <canvas id="timeCanvas" width="600" height="300"></canvas>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #8892b0; font-size: 0.9rem;">
+                        <span>Eje X: Tiempo (s)</span>
+                        <span>Eje Y: Amplitud (V)</span>
+                    </div>
+                </div>
+                
+                <!-- DIAGRAMA DE CONSTELACIÓN -->
+                <div class="canvas-box">
+                    <h4><i class="fas fa-bullseye"></i> DIAGRAMA DE CONSTELACIÓN</h4>
+                    <canvas id="constellationCanvas" width="400" height="400"></canvas>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #8892b0; font-size: 0.9rem;">
+                        <span>Eje X: Componente I</span>
+                        <span>Eje Y: Componente Q</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BOTONES DE CONTROL -->
+            <div class="buttons" style="margin-top: 25px;">
+                <button class="primary-btn" id="playBtn">
+                    <i class="fas fa-play"></i> Iniciar Simulación
+                </button>
+                <button class="secondary-btn" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reiniciar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="footer">
+        <h3><i class="fas fa-graduation-cap"></i> PROYECTO FINAL - APLICACIONES WEB</h3>
+        
+        <!-- AUTORES AÑADIDOS EN FOOTER -->
+        <div class="footer-authors">
+            <i class="fas fa-users"></i> Elaborado por: 
+            <strong>Alejandro Marrero Rojas</strong> y 
+            <strong>Sheyla Romy Lara Batista</strong>
+        </div>
+        
+        <p>Universidad de Oriente | Facultad de Ingenierías en Telecomunicaciones, Informática y Biomédica</p>
+        <p>© 2024 - Simulador de Modulación Digital | ASK • FSK • PSK • 4-QAM</p>
+        <p style="margin-top: 15px; color: #64ffda;">
+            <i class="fas fa-code"></i> Desarrollado con HTML5, CSS3 y JavaScript
+        </p>
+    </div>
+    
+    <!-- JAVASCRIPT -->
+    <script>
+        // ============================================
+        // VARIABLES Y CONSTANTES
+        // ============================================
+        let binarySequence = "10110010";
+        let modulationType = "ASK";
+        let frequency = 100;
+        let bitrate = 5;
+        let amplitude = 1.0;
+        let isPlaying = false;
+        let animationId = null;
+        
+        // Información de modulaciones
+        const modulationData = {
+            ASK: {
+                name: "ASK (Amplitude Shift Keying)",
+                description: "Modulación por desplazamiento de amplitud. El bit '1' se representa con amplitud alta y el bit '0' con amplitud baja o cero.",
+                formula: "s(t) = A·m(t)·cos(2πf₀t)",
+                color: "#3a86ff"
+            },
+            FSK: {
+                name: "FSK (Frequency Shift Keying)",
+                description: "Modulación por desplazamiento de frecuencia. El bit '1' usa una frecuencia f₁ y el bit '0' usa una frecuencia diferente f₂.",
+                formula: "s(t) = A·cos(2πfᵢt), fᵢ = f₀ (bit 0) o f₁ (bit 1)",
+                color: "#38b000"
+            },
+            PSK: {
+                name: "PSK (Phase Shift Keying)",
+                description: "Modulación por desplazamiento de fase. El bit '1' tiene fase 0° y el bit '0' tiene fase 180° (BPSK).",
+                formula: "s(t) = A·cos(2πf₀t + φᵢ), φᵢ = 0° o 180°",
+                color: "#ff006e"
+            },
+            QAM: {
+                name: "4-QAM (Quadrature Amplitude Modulation)",
+                description: "Modulación en cuadratura que usa dos portadoras desfasadas 90°. Cada símbolo representa 2 bits (00, 01, 10, 11).",
+                formula: "s(t) = I·cos(2πf₀t) - Q·sin(2πf₀t)",
+                color: "#8338ec"
+            }
+        };
+        
+        // ============================================
+        // FUNCIONES DE DIBUJO
+        // ============================================
+        
+        function drawGrid(ctx, width, height) {
+            ctx.strokeStyle = "rgba(100, 255, 218, 0.2)";
+            ctx.lineWidth = 0.5;
+            
+            // Líneas verticales
+            const gridSizeX = width / 10;
+            for (let x = 0; x <= width; x += gridSizeX) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            // Líneas horizontales
+            const gridSizeY = height / 10;
+            for (let y = 0; y <= height; y += gridSizeY) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // Ejes principales
+            ctx.strokeStyle = "rgba(100, 255, 218, 0.6)";
+            ctx.lineWidth = 2;
+            
+            // Eje X
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+            
+            // Eje Y
+            ctx.beginPath();
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.stroke();
+        }
+        
+        function drawTimeSignal() {
+            const canvas = document.getElementById('timeCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Limpiar canvas
+            ctx.clearRect(0, 0, width, height);
+            drawGrid(ctx, width, height);
+            
+            // Configurar estilo según modulación
+            const modColor = modulationData[modulationType].color;
+            ctx.strokeStyle = modColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const bitCount = binarySequence.length;
+            const bitDuration = 1.0 / bitrate;
+            const totalTime = bitCount * bitDuration;
+            const samplesPerBit = 50;
+            
+            // Dibujar señal
+            for (let i = 0; i <= width; i++) {
+                const t = (i / width) * totalTime;
+                const bitIndex = Math.floor(t / bitDuration);
+                
+                if (bitIndex >= bitCount) continue;
+                
+                const currentBit = binarySequence.charAt(bitIndex);
+                let y = height / 2;
+                
+                // Cálculo según tipo de modulación
+                switch(modulationType) {
+                    case "ASK":
+                        // ASK: diferente amplitud por bit
+                        const askAmp = (currentBit === '1') ? amplitude : amplitude * 0.3;
+                        y = height / 2 - Math.sin(2 * Math.PI * frequency * t) * askAmp * (height / 4);
+                        break;
+                        
+                    case "FSK":
+                        // FSK: diferente frecuencia por bit
+                        const fskFreq = (currentBit === '1') ? frequency : frequency * 0.7;
+                        y = height / 2 - Math.sin(2 * Math.PI * fskFreq * t) * amplitude * (height / 4);
+                        break;
+                        
+                    case "PSK":
+                        // PSK: diferente fase por bit
+                        const pskPhase = (currentBit === '1') ? 0 : Math.PI;
+                        y = height / 2 - Math.sin(2 * Math.PI * frequency * t + pskPhase) * amplitude * (height / 4);
+                        break;
+                        
+                    case "QAM":
+                        // 4-QAM simplificado
+                        const qamPhase = (currentBit === '1') ? Math.PI/4 : 3*Math.PI/4;
+                        y = height / 2 - Math.sin(2 * Math.PI * frequency * t + qamPhase) * amplitude * (height / 4);
+                        break;
+                }
+                
+                if (i === 0) {
+                    ctx.moveTo(i, y);
+                } else {
+                    ctx.lineTo(i, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Dibujar separadores de bits
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+            ctx.lineWidth = 1;
+            ctx.font = "bold 14px Arial";
+            ctx.fillStyle = "#64ffda";
+            
+            for (let bit = 0; bit < bitCount; bit++) {
+                const x = (bit * bitDuration / totalTime) * width;
+                
+                // Línea vertical
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+                
+                // Etiqueta del bit
+                if (bit < bitCount) {
+                    const bitValue = binarySequence.charAt(bit);
+                    ctx.fillText(bitValue, x + 5, 20);
+                }
+            }
+        }
+        
+        function drawConstellation() {
+            const canvas = document.getElementById('constellationCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.35;
+            
+            // Limpiar canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Dibujar rejilla circular
+            ctx.strokeStyle = "rgba(100, 255, 218, 0.2)";
+            ctx.lineWidth = 1;
+            
+            // Círculos concéntricos
+            for (let r = radius/2; r <= radius; r += radius/2) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+            
+            // Ejes
+            ctx.strokeStyle = "rgba(100, 255, 218, 0.6)";
+            ctx.lineWidth = 2;
+            
+            // Eje I (horizontal)
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.stroke();
+            
+            // Eje Q (vertical)
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, height);
+            ctx.stroke();
+            
+            // Etiquetas de ejes
+            ctx.fillStyle = "#64ffda";
+            ctx.font = "bold 16px Arial";
+            ctx.fillText("I (In-Phase)", width - 80, centerY - 10);
+            ctx.fillText("Q (Quadrature)", centerX + 10, 20);
+            
+            // Puntos según modulación
+            const modColor = modulationData[modulationType].color;
+            ctx.fillStyle = modColor;
+            
+            if (modulationType === "PSK") {
+                // 2 puntos opuestos (BPSK)
+                const points = [
+                    { x: centerX - radius/2, y: centerY, label: "0" },
+                    { x: centerX + radius/2, y: centerY, label: "1" }
+                ];
+                
+                points.forEach(point => {
+                    // Punto
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 12, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Etiqueta
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 16px Arial";
+                    ctx.fillText(point.label, point.x - 5, point.y - 20);
+                    ctx.fillStyle = modColor;
+                });
+                
+            } else if (modulationType === "QAM") {
+                // 4 puntos (4-QAM)
+                const points = [
+                    { x: centerX - radius/2, y: centerY - radius/2, label: "00" },
+                    { x: centerX + radius/2, y: centerY - radius/2, label: "01" },
+                    { x: centerX - radius/2, y: centerY + radius/2, label: "10" },
+                    { x: centerX + radius/2, y: centerY + radius/2, label: "11" }
+                ];
+                
+                points.forEach(point => {
+                    // Punto
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Etiqueta
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 14px Arial";
+                    ctx.fillText(point.label, point.x - 10, point.y - 15);
+                    ctx.fillStyle = modColor;
+                });
+                
+            } else {
+                // ASK y FSK no tienen constelación clásica
+                ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.font = "18px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("No aplica para " + modulationType, centerX, centerY);
+                ctx.textAlign = "left";
+            }
+        }
+        
+        function updateVisualization() {
+            drawTimeSignal();
+            drawConstellation();
+            updateModulationInfo();
+        }
+        
+        function updateModulationInfo() {
+            const data = modulationData[modulationType];
+            
+            document.getElementById('currentModulation').textContent = modulationType;
+            document.getElementById('currentModulation').style.backgroundColor = data.color;
+            document.getElementById('modulationDescription').textContent = data.description;
+            document.getElementById('formulaText').textContent = data.formula;
+            document.getElementById('formulaText').style.color = data.color;
+            
+            // Actualizar color del select
+            const select = document.getElementById('modulationType');
+            Array.from(select.options).forEach(option => {
+                option.style.backgroundColor = '#0a192f';
+            });
+            select.style.color = data.color;
+            select.style.borderColor = data.color;
+        }
+        
+        // ============================================
+        // FUNCIONES UTILITARIAS
+        // ============================================
+        
+        function generateRandomBinary(length = 8) {
+            let binary = "";
+            for (let i = 0; i < length; i++) {
+                binary += Math.random() > 0.5 ? "1" : "0";
+            }
+            return binary;
+        }
+        
+        function validateBinary(input) {
+            const binaryRegex = /^[01]+$/;
+            if (!binaryRegex.test(input)) {
+                document.getElementById('binaryInput').style.borderColor = '#ff006e';
+                return false;
+            }
+            document.getElementById('binaryInput').style.borderColor = '#38b000';
+            return true;
+        }
+        
+        function toggleSimulation() {
+            isPlaying = !isPlaying;
+            const playBtn = document.getElementById('playBtn');
+            
+            if (isPlaying) {
+                playBtn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                playBtn.style.background = 'linear-gradient(135deg, #ff006e, #cc0058)';
+                
+                // Animación simple
+                function animate() {
+                    if (!isPlaying) return;
+                    
+                    // Pequeña variación para simular animación
+                    frequency += 0.1;
+                    if (frequency > 500) frequency = 50;
+                    
+                    updateSliders();
+                    updateVisualization();
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+                
+            } else {
+                playBtn.innerHTML = '<i class="fas fa-play"></i> Iniciar Simulación';
+                playBtn.style.background = 'linear-gradient(135deg, #64ffda, #52d7b7)';
+                
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        }
+        
+        function resetToDefaults() {
+            binarySequence = "10110010";
+            modulationType = "ASK";
+            frequency = 100;
+            bitrate = 5;
+            amplitude = 1.0;
+            isPlaying = false;
+            
+            document.getElementById('binaryInput').value = binarySequence;
+            document.getElementById('modulationType').value = modulationType;
+            document.getElementById('frequency').value = frequency;
+            document.getElementById('bitrate').value = bitrate;
+            document.getElementById('amplitude').value = amplitude;
+            
+            updateSliders();
+            updateVisualization();
+            
+            const playBtn = document.getElementById('playBtn');
+            playBtn.innerHTML = '<i class="fas fa-play"></i> Iniciar Simulación';
+            playBtn.style.background = 'linear-gradient(135deg, #64ffda, #52d7b7)';
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        function updateSliders() {
+            document.getElementById('freqValue').textContent = frequency + " Hz";
+            document.getElementById('bitrateValue').textContent = bitrate + " bps";
+            document.getElementById('ampValue').textContent = amplitude.toFixed(1);
+        }
+        
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar
+            updateSliders();
+            updateVisualization();
+            
+            // Entrada binaria
+            document.getElementById('binaryInput').addEventListener('input', function(e) {
+                if (validateBinary(e.target.value)) {
+                    binarySequence = e.target.value;
+                    updateVisualization();
+                }
+            });
+            
+            // Selector de modulación
+            document.getElementById('modulationType').addEventListener('change', function(e) {
+                modulationType = e.target.value;
+                updateVisualization();
+            });
+            
+            // Sliders
+            document.getElementById('frequency').addEventListener('input', function(e) {
+                frequency = parseInt(e.target.value);
+                updateSliders();
+                updateVisualization();
+            });
+            
+            document.getElementById('bitrate').addEventListener('input', function(e) {
+                bitrate = parseInt(e.target.value);
+                updateSliders();
+                updateVisualization();
+            });
+            
+            document.getElementById('amplitude').addEventListener('input', function(e) {
+                amplitude = parseFloat(e.target.value);
+                updateSliders();
+                updateVisualization();
+            });
+            
+            // Botones
+            document.getElementById('randomBtn').addEventListener('click', function() {
+                const randomBinary = generateRandomBinary();
+                document.getElementById('binaryInput').value = randomBinary;
+                binarySequence = randomBinary;
+                validateBinary(randomBinary);
+                updateVisualization();
+            });
+            
+            document.getElementById('validateBtn').addEventListener('click', function() {
+                const input = document.getElementById('binaryInput').value;
+                if (validateBinary(input)) {
+                    binarySequence = input;
+                    updateVisualization();
+                    alert("✅ Secuencia binaria válida!");
+                } else {
+                    alert("❌ Error: Solo se permiten 0 y 1");
+                }
+            });
+            
+            document.getElementById('playBtn').addEventListener('click', toggleSimulation);
+            document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
+        });
+    </script>
+</body>
+</html>
